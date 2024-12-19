@@ -174,8 +174,8 @@ def summarize_simulation_results(results_dir, true_params, observed_time_points)
                     "Gamma_Coverage": coverage["Gamma_Coverage"],
                     "Sigma_Coverage": coverage["Sigma_Coverage"],
                     "R0_Coverage": coverage["R0_Coverage"],
-                    "Peak_Timing_Coverage": coverage["Peak_Timing_Coverage"],
-                    "Peak_Intensity_Coverage": coverage["Peak_Intensity_Coverage"],
+                    "Peak_Timing_Coverage": coverage_peak["Peak_Timing_Coverage"],
+                    "Peak_Intensity_Coverage": coverage_peak["Peak_Intensity_Coverage"],
                 })
 
     # Convert summary to DataFrame
