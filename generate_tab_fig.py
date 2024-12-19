@@ -10,7 +10,7 @@ num_observations = int(d_obs * t_max) + 1
 observed_time_points = np.linspace(0, t_max, num_observations)
 
 # Path to the directory containing all simulation result subdirectories
-results_dir = "fully_observed/"  # Replace with your actual path
+results_dir = "large run/"  # Replace with your actual path
 
 # Generate the summary DataFrame
 summary_df = summarize_simulation_results(results_dir, true_params, observed_time_points)

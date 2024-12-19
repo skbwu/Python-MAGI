@@ -144,13 +144,16 @@ def summarize_simulation_results(results_dir, true_params, observed_time_points)
                 gamma_samples = thetas_samps[:, 1]
                 sigma_samples = thetas_samps[:, 2]
                 R0_samples = beta_samples / gamma_samples
-                thetas_samps = np.hstack([thetas_samps, R0_samples.reshape(-1, 1), peak_timing.reshape(-1, 1), peak_intensity.reshape(-1, 1)])
-                true_params_local = np.concatenate([true_params, [peak_timing_true, peak_intensity_true]])
+                thetas_samps = np.hstack([thetas_samps, R0_samples.reshape(-1, 1)])
+                param_errors = compute_parameter_error(true_params, thetas_samps)
 
-                param_errors = compute_parameter_error(true_params_local, thetas_samps)
+                prediction_samps = np.hstack([peak_timing.reshape(-1, 1), peak_intensity.reshape(-1, 1)])
+                true_prediction = np.array([peak_timing_true, peak_intensity_true])
+                prediction_errors = compute_parameter_error(true_prediction, prediction_samps)
 
                 # Compute parameter coverage
-                coverage = compute_coverage(true_params_local, thetas_samps, confidence_level=95)
+                coverage = compute_coverage(true_params, thetas_samps, ['Beta', 'Gamma', 'Sigma', 'R0'], confidence_level=95)
+                coverage_peak = compute_coverage(true_prediction, prediction_samps, ['Peak_Timing', 'Peak_Intensity'], confidence_level=95)
 
                 # Append results to summary
                 summary.append({
@@ -165,8 +168,8 @@ def summarize_simulation_results(results_dir, true_params, observed_time_points)
                     "Gamma_Error": param_errors[1],
                     "Sigma_Error": param_errors[2],
                     "R0_Error": param_errors[3],
-                    "Peak_Timing_Error": param_errors[4],
-                    "Peak_Intensity_Error": param_errors[5],
+                    "Peak_Timing_Error": prediction_errors[0],
+                    "Peak_Intensity_Error": prediction_errors[1],
                     "Beta_Coverage": coverage["Beta_Coverage"],
                     "Gamma_Coverage": coverage["Gamma_Coverage"],
                     "Sigma_Coverage": coverage["Sigma_Coverage"],
@@ -439,7 +442,7 @@ def visualize_forecast_means(results_dir, observed_time_points, output_dir="visu
     return plot_df, true_forecast, ts_obs, example_observations
 
 
-def compute_coverage(true_params, inferred_samples, confidence_level=95):
+def compute_coverage(true_params, inferred_samples, names, confidence_level=95):
     """
     Compute the coverage of the true parameters within the posterior intervals.
 
@@ -454,7 +457,7 @@ def compute_coverage(true_params, inferred_samples, confidence_level=95):
     lower_percentile = (100 - confidence_level) / 2
     upper_percentile = 100 - lower_percentile
     coverage = {}
-    for i, param in enumerate(['Beta', 'Gamma', 'Sigma', 'R0', 'Peak_Timing', 'Peak_Intensity']):
+    for i, param in enumerate(names):
         lower = np.percentile(inferred_samples[:, i], lower_percentile)
         upper = np.percentile(inferred_samples[:, i], upper_percentile)
         is_covered = lower <= true_params[i] <= upper
