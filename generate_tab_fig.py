@@ -64,3 +64,33 @@ plt.show()
 summary_df.iloc[:, 1:].describe()
 summary_df.sort_values(by='Beta_Error', ascending=True, inplace=True)
 summary_df
+
+
+import os
+import pickle
+all_posterior_means = []
+results_dir = "fully_observed/"  # Replace with your actual path
+# Iterate through each simulation directory
+for sim_dir in os.listdir(results_dir):
+    sim_path = os.path.join(results_dir, sim_dir)
+    if os.path.isdir(sim_path):
+        pickle_file = os.path.join(sim_path, "simulation_results.pkl")
+        if os.path.exists(pickle_file):
+            try:
+                with open(pickle_file, "rb") as f:
+                    data = pickle.load(f)
+            except Exception as e:
+                print(f"Error loading {pickle_file}: {e}")
+                continue
+
+            results_forecast = data["results_forecast"]
+            X_samps = results_forecast["X_samps"]  # Shape (num_samples, T_forecast, D)
+
+            # Compute posterior mean for this dataset
+            posterior_mean = X_samps.mean(axis=0)  # Shape (T_forecast, D)
+            all_posterior_means.append(posterior_mean)
+
+with open(f'{results_dir}/all_posterior_means.pkl', 'wb') as f:
+    pickle.dump(all_posterior_means, f)
+
+ts_forecast = data["results_forecast"]["I"].flatten()  # Shape (T_forecast,)
