@@ -65,7 +65,7 @@ args = parser.parse_args()
 seed = args.seed
 
 # Specify output directory and create it if it doesn't exist
-output_dir = f"results_seed_{seed}"
+output_dir = f"results_missing_e_seed_{seed}"
 os.makedirs(output_dir, exist_ok=True)
 
 # Load data and select observations
