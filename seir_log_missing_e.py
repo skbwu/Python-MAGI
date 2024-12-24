@@ -53,9 +53,8 @@ def f_vec(t, X, thetas):
     return tf.stack([dlogEdt, dlogIdt, dlogRdt], axis=1)
 
 # Initial settings
-d_obs = 20  # Observations per unit time
-t_max = 2.0  # Observation interval length
-
+d_obs = 40/60  # Observations per unit time
+t_max = 60.0  # Observation interval length
 
 # Add command-line argument for the seed
 parser = argparse.ArgumentParser(description="Run SEIR model and save results.")
@@ -93,9 +92,9 @@ print("Acceptance rate:", acceptance_rate)
 burn_in = 1000
 samples = chain[burn_in:]
 
-plot_mcmc(samples, orig_data, np.exp(X_obs), ts_obs, final_thetas, X0_final, t_max=4.0, n_pred_samples=400,
+plot_mcmc(samples, orig_data, np.exp(X_obs), ts_obs, final_thetas, X0_final, t_max=120.0, n_pred_samples=400,
           caption_text="MCMC on MLE likelihood", output_dir=output_dir)
-plot_trace(np.exp(samples[:, :3]), [6.0, 0.6, 1.8], ["beta", "gamma", "sigma"],
+plot_trace(np.exp(samples[:, :3]), [0.2, 0.08, 0.1], ["beta", "gamma", "sigma"],
            "trace plot for theta in MCMC on MLE likelihood", output_dir=output_dir)
 
 # Create the MAGI-TFP model
@@ -104,8 +103,8 @@ model = magi_v2.MAGI_v2(D_thetas=3, ts_obs=ts_obs, X_obs=X_obs, bandsize=None, f
 # Fit initial hyperparameters
 phi_exo = None
 model.initial_fit(discretization=2, verbose=True, use_fourier_prior=False, phi_exo=phi_exo)
-model.phi1s[0] = 2
-model.phi2s[0] = 0.44
+model.phi1s[0] = 4
+model.phi2s[0] = 6.82
 model.update_kernel_matrices(I_new=model.I, phi1s_new=model.phi1s, phi2s_new=model.phi2s)
 
 clear_output(wait=True)
@@ -118,26 +117,26 @@ x_true = raw_data[["E_true", "I_true", "R_true"]]
 x_true = np.log(x_true)
 plot_trajectories(ts_true, x_true, results, ts_obs, X_obs, caption_text="MAGI on log-scale SEIR", output_dir=output_dir)
 plot_trajectories(ts_true, x_true, results, ts_obs, X_obs, trans_func=np.exp, caption_text="MAGI on original-scale SEIR", output_dir=output_dir)
-print_parameter_estimates(results, [6.0, 0.6, 1.8])
+print_parameter_estimates(results, [0.2, 0.08, 0.1])
 
 theta_samples = results["thetas_samps"]  # Shape: (num_samples, 3)
 beta_samples = theta_samples[:, 0]
 gamma_samples = theta_samples[:, 1]
 sigma_samples = theta_samples[:, 2]
 # Calculate R0 samples
-R0_samples = beta_samples / (gamma_samples + sigma_samples)
+R0_samples = beta_samples / gamma_samples
 theta_samples = np.hstack([theta_samples, R0_samples.reshape(-1, 1)])
 
-plot_trace(theta_samples, [6.0, 0.6, 1.8, (6.0 / (0.6 + 1.8))], ["beta", "gamma", "sigma", "R0"],
+plot_trace(theta_samples, [0.2, 0.08, 0.1, (0.2 / 0.08)], ["beta", "gamma", "sigma", "R0"],
            "trace plot for theta in MAGI", output_dir=output_dir)
 
 
 # 'results' contains posterior samples from the in-sample fit, e.g. up to t_max=2.0
 # Now we want to predict out-of-sample beyond t=2.0, say up to t=4.0
 
-t_step_prev_end = 2.0  # end of the in-sample period used in the first script
-t_forecast_end = 4.0   # new forecast horizon
-t_stepsize = 2.0       # length of the new interval we want to forecast
+t_step_prev_end = 60.0  # end of the in-sample period used in the first script
+t_forecast_end = 120.0   # new forecast horizon
+t_stepsize = 60.0       # length of the new interval we want to forecast
 
 # We assume a similar density of discretization points as the in-sample fit.
 # The first script used something like 20 observations per unit time.
@@ -146,7 +145,7 @@ t_stepsize = 2.0       # length of the new interval we want to forecast
 
 I_append = np.linspace(start=model.I[-1, 0],
                        stop=model.I[-1, 0] + t_stepsize,
-                       num=int(80 * t_stepsize + 1))[1:].reshape(-1,1)
+                       num=161)[1:].reshape(-1,1)
 I_new = np.vstack([model.I, I_append])
 
 # Update kernel matrices for the extended interval
@@ -194,7 +193,7 @@ x_true = np.log(x_true)
 # results_forecast now contains posterior samples for the entire time range [0,4], including the forecasted portion.
 
 # Optionally, we can visualize the forecast:
-plot_trace(results_forecast["thetas_samps"], [6.0, 0.6, 1.8], ["beta", "gamma", "sigma"],
+plot_trace(results_forecast["thetas_samps"], [0.2, 0.08, 0.1], ["beta", "gamma", "sigma"],
            caption_text="trace plot for theta in MAGI forecast", output_dir=output_dir)
 
 sol_mle = solve_ivp(fun=lambda t, y: ODE_log_scale(t, y, final_thetas),

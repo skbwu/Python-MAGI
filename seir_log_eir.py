@@ -64,11 +64,11 @@ output_dir = f"results_fully_observed_seed_{seed}"
 os.makedirs(output_dir, exist_ok=True)
 
 # Initial settings
-d_obs = 20  # Observations per unit time
-t_max = 2.0  # Observation interval length
+d_obs = 40/60  # Observations per unit time
+t_max = 60.0  # Observation interval length
 
 # Load data and select observations
-orig_data = pd.read_csv(f'tfpigp/data/logSEIR_beta=6.0_gamma=0.6_sigma=1.8_alpha=0.15_seed={seed}.csv')
+orig_data = pd.read_csv(f'tfpigp/data/logSEIR_beta=0.2_gamma=0.08_sigma=0.1_alpha=0.15_seed={seed}.csv')
 raw_data = orig_data.query(f"t <= {t_max}")
 obs_data = raw_data.iloc[::int((raw_data.index.shape[0] - 1) / (d_obs * t_max))]
 
@@ -78,6 +78,9 @@ X_obs = np.log(obs_data[["E_obs", "I_obs", "R_obs"]].to_numpy().astype(np.float6
 
 # Create the MAGI-TFP model
 model = magi_v2.MAGI_v2(D_thetas=3, ts_obs=ts_obs, X_obs=X_obs, bandsize=None, f_vec=f_vec)
+# model.initial_fit(discretization=0, verbose=True, use_fourier_prior=False, phi_exo=None)
+# model.update_kernel_matrices(I_new=model.I, phi1s_new=model.phi1s, phi2s_new=model.phi2s)
+
 
 # Fit initial hyperparameters
 phi_exo = None
@@ -95,18 +98,18 @@ x_true = np.log(x_true)
 # Visualization and saving results
 plot_trajectories(ts_true, x_true, results, ts_obs, X_obs, caption_text="MAGI on log-scale SEIR", output_dir=output_dir)
 plot_trajectories(ts_true, x_true, results, ts_obs, X_obs, trans_func=np.exp, caption_text="MAGI on original-scale SEIR", output_dir=output_dir)
-print_parameter_estimates(results, [6.0, 0.6, 1.8])
-plot_trace(results["thetas_samps"], [6.0, 0.6, 1.8], ["beta", "gamma", "sigma"], "trace plot for theta in MAGI", output_dir=output_dir)
+print_parameter_estimates(results, [0.2, 0.08, 0.1])
+plot_trace(results["thetas_samps"], [0.2, 0.08, 0.1], ["beta", "gamma", "sigma"], "trace plot for theta in MAGI", output_dir=output_dir)
 
 # 'results' contains posterior samples from the in-sample fit, e.g., up to t_max=2.0
 # Extend model for forecasting
-t_step_prev_end = 2.0  # end of the in-sample period used in the first script
-t_forecast_end = 4.0   # new forecast horizon
-t_stepsize = 2.0       # length of the new interval we want to forecast
+t_step_prev_end = 60.0  # end of the in-sample period used in the first script
+t_forecast_end = 120.0   # new forecast horizon
+t_stepsize = 60.0       # length of the new interval we want to forecast
 
 I_append = np.linspace(start=model.I[-1, 0],
                        stop=model.I[-1, 0] + t_stepsize,
-                       num=int(80 * t_stepsize + 1))[1:].reshape(-1, 1)
+                       num=161)[1:].reshape(-1, 1)
 I_new = np.vstack([model.I, I_append])
 
 model.update_kernel_matrices(I_new=I_new, phi1s_new=model.phi1s, phi2s_new=model.phi2s)
@@ -140,7 +143,7 @@ x_true = raw_data[["E_true", "I_true", "R_true"]]
 x_true = np.log(x_true)
 
 plot_trajectories(ts_true, x_true, results_forecast, ts_obs, X_obs, caption_text="MAGI forecast", output_dir=output_dir)
-plot_trace(results_forecast["thetas_samps"], [6.0, 0.6, 1.8], ["beta", "gamma", "sigma"], "trace plot for theta in MAGI forecast", output_dir=output_dir)
+plot_trace(results_forecast["thetas_samps"], [0.2, 0.08, 0.1], ["beta", "gamma", "sigma"], "trace plot for theta in MAGI forecast", output_dir=output_dir)
 
 # Save results and data as pickle files
 output_data = {
