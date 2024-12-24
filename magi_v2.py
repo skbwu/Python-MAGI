@@ -635,8 +635,8 @@ class MAGI_v2:
         #### 3. CHOOSE PRIOR FOR PHI2 BASED ON FLAG
         if not self.use_fourier_prior:
             # Flat prior for phi2 (mean = 1.0, large variance)
-            mu_phi2s = np.full(D_filled, 1.0)
-            sd_phi2s = np.full(D_filled, 1000.0)
+            mu_phi2s = np.full(D_filled, max(I)*0.2)
+            sd_phi2s = np.full(D_filled, 1000000.0)
 
         # constructing a sampleable-object to pass into TFP optimization
         gpjm = tfd.JointDistributionNamed(
@@ -681,7 +681,7 @@ class MAGI_v2:
                                 "sigma_sqs": sigma_sqs, 
                                 "phi2s": phi2s, 
                                 "observations": X_filled_bcst})
-        num_iters = 100; optimizer = tf_keras.optimizers.Adam(learning_rate=.01)
+        num_iters = 1000; optimizer = tf_keras.optimizers.Adam(learning_rate=.1)
 
         # taking one step of Adam + scaling up to train our model
         @tf.function(autograph=True, jit_compile=True)
