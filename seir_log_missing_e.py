@@ -69,7 +69,7 @@ output_dir = f"results_missing_e_seed_{seed}"
 os.makedirs(output_dir, exist_ok=True)
 
 # Load data and select observations
-orig_data = pd.read_csv(f'tfpigp/data/logSEIR_beta=6.0_gamma=0.6_sigma=1.8_alpha=0.15_seed={seed}.csv')
+orig_data = pd.read_csv(f'tfpigp/data/logSEIR_beta=0.2_gamma=0.08_sigma=0.1_alpha=0.15_seed={seed}.csv')
 raw_data = orig_data.query(f"t <= {t_max}")
 obs_data = raw_data.iloc[::int((raw_data.index.shape[0] - 1) / (d_obs * t_max))]
 
