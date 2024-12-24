@@ -3,10 +3,10 @@ import pandas as pd
 from scipy.integrate import solve_ivp
 
 # generate SEIR datasets
-for seed in range(20, 100):
+for seed in range(0, 100):
     for alpha in [0.15]:
         # parameter set for beta, gamma, sigma
-        for params in [(6.0, 0.6, 1.8)]:
+        for params in [(0.2, 0.08, 0.1)]:
             np.random.seed(seed)
 
             b, g, sigma, alpha_value, N = params[0], params[1], params[2], alpha, 1.0
@@ -29,7 +29,7 @@ for seed in range(20, 100):
 
             # initial conditions
             SEIR_init = np.array([0.9899, 0.0050, 0.0050, 0.0001])
-            t_start, t_end = 0.0, 20.0
+            t_start, t_end = 0.0, 120.0
             t_steps = np.linspace(start=t_start, stop=t_end, num=20001)
 
             # solve the system
@@ -61,8 +61,8 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 # Parameters
-beta, gamma, sigma = 6.0, 0.6, 1.8
-t_start, t_end = 0.0, 20.0
+beta, gamma, sigma = 0.2, 0.08, 0.1
+t_start, t_end = 0.0, 120.0
 num_steps = 20001
 t_steps = np.linspace(t_start, t_end, num_steps)
 initial_conditions_log = np.log([0.9899, 0.005, 0.0001])  # Initial logS, logI, logR
