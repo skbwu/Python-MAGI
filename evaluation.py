@@ -144,6 +144,14 @@ def summarize_simulation_results(results_dir, true_params, observed_time_points)
                 peak_timing_true = ts_true[peak_timing_true]
                 peak_intensity_true = np.exp(np.max(x_true.iloc[:, 1]))
 
+                forecast_eval_time_points = np.linspace(2.0, 4.0, 41)
+                forecast_eval_indices_in_I = np.isin(np.round(results_forecast['I'], 5), np.round(forecast_eval_time_points, 5)).nonzero()[0]
+                forecast_eval_indices_in_true = np.isin(np.round(ts_true, 5), np.round(forecast_eval_time_points, 5)).nonzero()[0]
+
+                rmse_pred_log = np.sqrt(
+                    ((x_true.loc[forecast_eval_indices_in_true, :] - results_forecast["X_samps"][:, forecast_eval_indices_in_I, :].mean(axis=0)) ** 2).mean(axis=0))
+                rmse_pred_log = rmse_pred_log.values
+
                 # Compute parameter estimation errors
                 thetas_samps = results["thetas_samps"]  # Shape (num_samples, P)
 
@@ -168,6 +176,9 @@ def summarize_simulation_results(results_dir, true_params, observed_time_points)
                     "RMSE_logE": rmse_log[0],
                     "RMSE_logI": rmse_log[1],
                     "RMSE_logR": rmse_log[2],
+                    "rmse_pred_logE": rmse_pred_log[0],
+                    "rmse_pred_logI": rmse_pred_log[1],
+                    "rmse_pred_logR": rmse_pred_log[2],
                     "RMSE_E": rmse_orig[0],
                     "RMSE_I": rmse_orig[1],
                     "RMSE_R": rmse_orig[2],
