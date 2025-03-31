@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python_magi"
+version = "0.0.4"
+dependencies = [
+    "numpy >= 1.26.4",
+    "scipy >= 1.11.4",
+    "scikit-learn >= 1.5.2",
+    "tensorflow >= 2.18.0",
+    "tf_keras >= 2.18.0",
+    "tensorflow_probability >= 0.25.0",
+    "tqdm >= 4.66.5",
+]
+requires-python = ">=3.8"
+authors = [
+  { name="Skyler Wu", email="skylerw@stanford.edu" },
+  { name="Samuel Kou", email="kou@stat.harvard.edu" },
+  { name="Shihao Yang", email="shihao.yang@isye.gatech.edu" },
+]
+maintainers = [
+  {name = "Skyler Wu", email = "skylerw@stanford.edu"}
+]
+description = "Python-MAGI: A TensorFlow Probability-Powered Upgraded Implementation of MAnifold-Constrained Gaussian Process Inference (MAGI)"
+readme = "README.md"
+keywords = ["dynamical systems", "inverse problems", "monte carlo"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/python_magi"]
+
+[project.urls]
+Homepage = "https://github.com/skbwu/Python-MAGI"
+Documentation = "https://github.com/skbwu/Python-MAGI/README.md"
+Issues = "https://github.com/skbwu/Python-MAGI/issues"
