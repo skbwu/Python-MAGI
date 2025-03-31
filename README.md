@@ -13,3 +13,5 @@ The main `MAGI` class was written to roughly mirror `scikit-learn` grammar for u
 - `predict`: after receiving and/or fitting Matern kernel hyperparameters to the provided data, returns samples from the posterior distribution of the entire system along with diagnostics.
 
 Please contact [skylerw@stanford.edu](skylerw@stanford.edu) if you have any comments, suggestions, or concerns. 
+
+**Special appreciation to Nithin Kavi (Harvard '24) for his assistance working with PyPI.*
