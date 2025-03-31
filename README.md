@@ -5,6 +5,8 @@ This package is an upgraded version of the MAGI algorithm developed by [Yang et 
 
 The main `MAGI` class was written to roughly mirror `scikit-learn` grammar for user-friendliness, with some minor modifications. Please see our [vignette](https://github.com/skbwu/Python-MAGI/blob/main/vignette.ipynb) for a quick start guide.
 
+**Installation:** `pip install python-magi==0.0.4` or installing manually using the `.whl` or `.tar.gz` files in the `dist` directory.
+
 **High-Level Description of Core Functions:** please see the complete source code at `magi.py` for full details.
 - `__init__`: constructor where the governing ODE equations `f_vec`, (potentially partially-observed) timesteps `ts_obs` and noisy observations `X_obs`, and computational settings (e.g., number of components in system, bandmatrix approximations) are specified to create a `MAGI` object.
 - `initial_fit`: fits the initial Matern kernel hyperparameters for the ODE inverse problem. Can take user-specified subsets of hyperparameters, too, and automatically accounts for missing observations and/or entirely-missing components in the provided noisy observed data.
