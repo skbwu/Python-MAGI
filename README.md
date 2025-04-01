@@ -14,4 +14,4 @@ The main `MAGI` class was written to roughly mirror `scikit-learn` grammar for u
 
 Please contact [skylerw@stanford.edu](skylerw@stanford.edu) if you have any comments, suggestions, or concerns. 
 
-**Special appreciation to Nithin Kavi (Harvard '24) and Alexandru Lopotenco (Stanford Statistics) for his assistance working with PyPI.*
+**Special appreciation to Nithin Kavi (Harvard '24) and Alexandru Lopotenco (Stanford Statistics) for their technical assistance.*
